@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-LOG_FILE = "/opt/mozbx_server/get_web/zbx_in_db.log"
+LOG_FILE = "/opt/Code/mozbx_server/get_web/zbx_in_db.log"
 
 
 # Quick-start development settings - unsuitable for production
@@ -57,11 +57,11 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'mozbx_server.urls'
 
 TEMPLATE_DIRS = (
-    '/opt/mozbx_server/templates',
+    '/opt/Code/mozbx_server/templates',
 )
 
 STATICFILES_DIRS = (
-    '/opt/mozbx_server/static',
+    '/opt/Code/mozbx_server/static',
 )
 
 WSGI_APPLICATION = 'mozbx_server.wsgi.application'

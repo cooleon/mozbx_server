@@ -1,5 +1,7 @@
 # encoding:utf8
-from django.shortcuts import render
+import django
+from django.utils import timezone
+from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib import auth
@@ -14,6 +16,7 @@ import json
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+TZ = timezone.pytz.timezone('UTC')
 
 # Create your views here.
 
@@ -22,38 +25,32 @@ def login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = auth.authenticate(username=username,password=password)
-        #print 'username : ',  username
-        #print 'password : ',  password
-        if user is not None:
-            try:
-                if django.utils.timezone.now() > user.userprofile.valid_begin_time and django.utils.timezone.now()  < user.userprofile.valid_end_time:
-                    auth.login(request,user)
-                    request.session.set_expiry(60*30)
-                    print 'session expires at :',request.session.get_expiry_date()
-                    return HttpResponseRedirect('/dashboard/')
-                else:
-                    return render(request,'gentelella/production/login.html',{'login_err': 'User account is expired,please login again!'})
-            except Exception,e:
-                return render(request,'gentelella/production/login.html',{'login_err': u'账户还未设定,请先登录后台管理界面创建账户!'})
+        if user and user.is_active:
+            auth.login(request,user)
+            return HttpResponseRedirect('/dashboard/')
         else:
            return render(request,'gentelella/production/login.html',{'login_err': 'Wrong username or password!'})
     return render(request, 'gentelella/production/login.html')
+
+def logout(request):
+    auth.logout(request)
+    return HttpResponseRedirect('/login/')
 
 def invalid(request):
     return render(request, 'gentelella/production/page_404.html',)
 
 
 def das_json(request):
-    days = 45
+    days = 30
     unow = datetime.datetime.now()
     uzero = datetime.datetime(unow.year, unow.month, unow.day, 0, 0, 0)
     d_start =  uzero - datetime.timedelta(days=days)
+    d_start = timezone.make_aware(d_start, TZ)
     dump_list = []
     for day in xrange(days):
         dump_dic = {}
         d_start =  d_start + datetime.timedelta(days=1)
         d_end =  d_start + datetime.timedelta(days=1)
-        #print str(d_start), str(d_end)
         dump_dic["day"] = str(d_start)[5:10].lstrip('0')
         dump_dic["war"] = Issues.objects.filter(problemtime__gt=d_start,
                                                 problemtime__lt=d_end,
@@ -147,14 +144,15 @@ def get_srv_list(stype):
         return get_list
 
 def dashboard(request):
-    #print request.COOKIES
-    dstr = datetime.datetime.now().strftime("%Y-%m-%d")
+    dstr = datetime.datetime.now()
+    d_start =  dstr - datetime.timedelta(days=1)
+    #dstr = timezone.make_aware(dstr, TZ)
     all_hosts_num = 0
     all_hosts_uptime = 0
     all_srv = zbx_srv.objects.all()
     srv_num = len(all_srv)
     srv_info_list = []
-    today_issuse = Issues.objects.filter(problemtime__gt=dstr)
+    today_issuse = Issues.objects.filter(problemtime__gt=d_start)
     all_srv = zbx_srv.objects.all()
     uptime_dict = {}
     for i in all_srv:
@@ -189,6 +187,8 @@ def dashboard(request):
     avg_time = round(all_hosts_uptime / (86400.0 * all_hosts_online), 2)
     dan_all = Issues.objects.filter(level__gte=3,resolve=0).count()
     war_all = Issues.objects.filter(level=2,resolve=0).count()
+    return render_to_response('gentelella/production/index2.html', locals())
+'''
     return render(request, 'gentelella/production/index2.html',
                   {"srv_info_list": srv_info_list,
                    "all_hosts_num": all_hosts_num,
@@ -205,6 +205,7 @@ def dashboard(request):
                    "min_uptime": min_uptime
                    }
                   )
+'''
 
 
 def srv_hosts(srv_id):

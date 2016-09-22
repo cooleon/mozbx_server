@@ -64,13 +64,13 @@
                   <div class="icon"><i class="fa fa-linux"></i>
                   </div>
                   {% if item.status == 0 %}
-                  <h3><strong><i class="fa fa-home"></i><font color="red">{{ item.name }} <small>离线</small></font></strong></h3>
+                  <h4>&nbsp;<strong><i class="fa fa-home"></i><font color="red">{{ item.name }} <small>离线</small></font></strong></h4>
                   {% else %}
-                  <h3><strong><i class="fa fa-home"></i><font color="green">{{ item.name }} <small>在线</small></font></strong></h3>
+                  <h4>&nbsp;<strong><i class="fa fa-home"></i><font color="green">{{ item.name }} <small>在线</small></font></strong></h4>
                   {% endif %}
                           <div class="count">{{ item.hosts_total }}/<font color="red"><small>{{ item.dan }}</small></font>/<font color="orange"><small>{{ item.war}}</small></font></div>
-                      <span class="color bg-blue">监控中</span>
-                      <span class="color bg-red">危险</span>
+                      &nbsp;<span class="color bg-blue">监控中</span>&nbsp;
+                      <span class="color bg-red">危险</span>&nbsp;
                       <span class="color bg-orange">警告</span>
                 </div>
               </div>
@@ -229,7 +229,7 @@
                         <tr>
                             <td>{{ item.locate }}</td>
                             <td>{{ item.hostname }}</td>
-                            <td>{{ item.problemtime|date:"Y-m-d H:i:s" }}</td>
+                            <td>{{ item.problemtime|date:"y-m-d H:i:s" }}</td>
                             <td>{{ item.desciptions }}</td>
                             {% if item.level == 1 %}
                             <td><span class="label label-info">普通</span></td>
