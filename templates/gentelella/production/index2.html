@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Zabbix 数据汇总</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="/static/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- jVectorMap -->
+    <link href="css/maps/jquery-jvectormap-2.0.3.css" rel="stylesheet"/>
+
+
+       {% include 'gentelella/production/nav.html' %}
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <!-- top tiles -->
+          <div class="row tile_count">
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+                <span class="count_top"><i class="fa fa-linux"></i> <i class="fa fa-windows"></i> Total hosts</span>
+              <div class="count">{{ all_hosts_num }}</div>
+              <span class="count_bottom"><i class="green">{{ srv_num }} </i> Zabbix serverce</span>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-clock-o"></i> Avg uptime (days)</span>
+              <div class="count">{{ avg_time }}</div>
+              <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>{{ all_hosts_num }} </i> hosts </span>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-bomb"></i> All danger</span>
+              <div class="count red">{{ dan_all }}</div>
+              <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-bell"></i> All  warning</span>
+              <div class="count "><font color="orange">{{ war_all }}</font></div>
+              <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> From last Week</span>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-thumbs-o-up"></i> Top 1 uptime(days)</span>
+              <div class="count"><i class="green"> {{ max_uptime }}</i></div>
+              <span class="count_bottom"><i class="green">{{ max_srv_name }}</i> {{ max_host_name }}</span>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-plug"></i> Recently Reboot(hours) </span>
+              <div class="count"><i class="red"> {{ min_uptime }}</i></div>
+              <span class="count_bottom"><i class="green">{{ min_srv_name }}</i> {{ min_host_name }}</span>
+            </div>
+          </div>
+          <!-- /top tiles -->
+          <div class="">
+
+            <div class="row top_tiles">
+           {% for item in srv_info_list %}
+              <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="tile-stats">
+                  <div class="icon"><i class="fa fa-linux"></i>
+                  </div>
+                  {% if item.status == 0 %}
+                  <h3><strong><i class="fa fa-home"></i><font color="red">{{ item.name }} <small>离线</small></font></strong></h3>
+                  {% else %}
+                  <h3><strong><i class="fa fa-home"></i><font color="green">{{ item.name }} <small>在线</small></font></strong></h3>
+                  {% endif %}
+                          <div class="count">{{ item.hosts_total }}/<font color="red"><small>{{ item.dan }}</small></font>/<font color="orange"><small>{{ item.war}}</small></font></div>
+                      <span class="color bg-blue">监控中</span>
+                      <span class="color bg-red">危险</span>
+                      <span class="color bg-orange">警告</span>
+                </div>
+              </div>
+           {% endfor %}
+            </div>
+
+              <!-- chart start -->
+
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>30天内告警<small>未处理</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <canvas id="lineChart"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>各节点告警<small>未处理</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <canvas id="mybarChart"></canvas>
+                  </div>
+                </div>
+             </div>
+
+
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>月份告警<small>未处理</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <canvas id="eChart"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>主机数量<small>监控中</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <canvas id="pieChart"></canvas>
+                  </div>
+                </div>
+            </div>
+
+              <!-- chart end -->
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                      <h2>今日告警</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <table id="datatable" class="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th>业务</th>
+                          <th>主机名</th>
+                          <th>警告时间</th>
+                          <th>事件</th>
+                          <th>警告等级</th>
+                          <th>是否解决</th>
+                        </tr>
+                      </thead>
+
+
+                      <tbody>
+                        {% for item in today_issuse %}
+                        <tr>
+                            <td>{{ item.locate }}</td>
+                            <td>{{ item.hostname }}</td>
+                            <td>{{ item.problemtime|date:"Y-m-d H:i:s" }}</td>
+                            <td>{{ item.desciptions }}</td>
+                            {% if item.level == 1 %}
+                            <td><span class="label label-info">普通</span></td>
+                            {% elif item.level == 2 %}
+                            <td><span class="label label-warning">警告</span></td>
+                            {% elif item.level == 3 %}
+                            <td><span class="label label-danger">危险</span></td>
+                            {% elif item.level == 4 %}
+                            <td><span class="label label-danger">灾难</span></td>
+                            {% endif %}
+                            {% if item.resolve == 1 %}
+                            <td><span class="label label-success">已经解决</span></td>
+                            {% else %}
+                            <td><span class="label label-danger">未解决</span></td>
+                            {% endif %}
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="/static/vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="/static/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="/static/vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="/static/vendors/nprogress/nprogress.js"></script>
+    <!-- Chart.js -->
+    <script src="/static/vendors/Chart.js/dist/Chart.min.js"></script>
+    <!-- jQuery Sparklines -->
+    <script src="/static/vendors/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
+    <!-- Flot -->
+    <script src="/static/vendors/Flot/jquery.flot.js"></script>
+    <script src="/static/vendors/Flot/jquery.flot.pie.js"></script>
+    <script src="/static/vendors/Flot/jquery.flot.time.js"></script>
+    <script src="/static/vendors/Flot/jquery.flot.stack.js"></script>
+    <script src="/static/vendors/Flot/jquery.flot.resize.js"></script>
+    <!-- Flot plugins -->
+    <script src="/static/js/flot/jquery.flot.orderBars.js"></script>
+    <script src="/static/js/flot/date.js"></script>
+    <script src="/static/js/flot/jquery.flot.spline.js"></script>
+    <script src="/static/js/flot/curvedLines.js"></script>
+    <script src="/static/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="/static/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="/static/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="/static/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+    <script src="/static/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+    <script src="/static/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/static/vendors/datatables.net-scroller/js/datatables.scroller.min.js"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="/static/js/moment/moment.min.js"></script>
+    <script src="/static/js/datepicker/daterangepicker.js"></script>
+    
+    <!-- Custom Theme Scripts -->
+    <script src="/static/js/custom.js"></script>
+
+    <!-- Flot -->
+    <script>
+      function shuffle(array) {
+      var currentIndex = array.length, temporaryValue, randomIndex;
+      // While there remain elements to shuffle...
+         while (0 !== currentIndex) {
+         // Pick a remaining element...
+         randomIndex = Math.floor(Math.random() * currentIndex);
+         currentIndex -= 1;
+      
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+        }
+      
+      return array;
+      }
+        function getRandomColor() {
+        var letters = '0123456789ABCDEF'.split('');
+        var color = '#';
+        for (var i = 0; i < 6; i++ ) {
+            color += letters[Math.floor(Math.random() * 16)];
+            }
+       return color;
+        }
+
+            $.get('/djson/', function(json) {
+                    var lables = json.map(function(item) {
+                            return item.day;
+                            });
+                    var danger = json.map(function(item) {
+                            return item.dan;
+                            });
+                    var warnning = json.map(function(item) {
+                            return item.war;
+                            });
+
+      var ctx = document.getElementById("lineChart");
+      var lineChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: lables,
+          datasets: [{
+            label: "危险",
+            backgroundColor: "rgba(204,0,0,0.31)",
+            borderColor: "rgba(204,0,0,0.7)",
+            pointBorderColor: "rgba(204,0,0,0.7)",
+            pointBackgroundColor: "rgba(204,0,0,0.7)",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointBorderWidth: 1,
+            data:  danger
+          }, {
+            label: "警告",
+            backgroundColor: "rgba(248,239,0,0.3)",
+            borderColor: "rgba(248,239,0,0.70)",
+            pointBorderColor: "rgba(248,239,0,0.70)",
+            pointBackgroundColor: "rgba(248,239,0,0.70)",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgba(151,187,205,1)",
+            pointBorderWidth: 1,
+            data: warnning
+          }]
+        },
+      });
+           });
+
+      // Bar chart
+            $.get('/srvjson/', function(json) {
+                    var lables = json.map(function(item) {
+                            return item.srv;
+                            });
+                    var danger = json.map(function(item) {
+                            return item.dan;
+                            });
+                    var warnning = json.map(function(item) {
+                            return item.war;
+                            });
+                    var hosts = json.map(function(item) {
+                            return item.hosts;
+                            });
+
+      var ctx = document.getElementById("mybarChart");
+      var mybarChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: lables,
+          datasets: [{
+            label: '危险',
+            backgroundColor: "#CC0000",
+            data: danger
+          }, {
+            label: '警告',
+            backgroundColor: "#F8E000",
+            data:  warnning
+          }]
+        },
+
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
+        }
+      });
+
+      // Pie chart
+      var ctx = document.getElementById("pieChart");
+      var data = {
+        datasets: [{
+          data: hosts,
+          backgroundColor: [
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor()
+          ],
+          label: 'My dataset' // for legend
+        }],
+        labels: lables,
+      };
+
+      var pieChart = new Chart(ctx, {
+        data: data,
+        type: 'pie',
+        otpions: {
+          legend: false
+        }
+      });
+
+
+           });
+
+    </script>
+    <!-- Datatables -->
+    <script>
+      $(document).ready(function() {
+        var handleDataTableButtons = function() {
+          if ($("#datatable-buttons").length) {
+            $("#datatable-buttons").DataTable({
+              dom: "Bfrtip",
+              buttons: [
+                {
+                  extend: "copy",
+                  className: "btn-sm"
+                },
+                {
+                  extend: "csv",
+                  className: "btn-sm"
+                },
+                {
+                  extend: "excel",
+                  className: "btn-sm"
+                },
+                {
+                  extend: "pdfHtml5",
+                  className: "btn-sm"
+                },
+                {
+                  extend: "print",
+                  className: "btn-sm"
+                },
+              ],
+              responsive: true
+            });
+          }
+        };
+
+        TableManageButtons = function() {
+          "use strict";
+          return {
+            init: function() {
+              handleDataTableButtons();
+            }
+          };
+        }();
+
+        $('#datatable').dataTable();
+        $('#datatable-keytable').DataTable({
+          keys: true
+        });
+
+        $('#datatable-responsive').DataTable();
+
+        $('#datatable-scroller').DataTable({
+          ajax: "js/datatables/json/scroller-demo.json",
+          deferRender: true,
+          scrollY: 380,
+          scrollCollapse: true,
+          scroller: true
+        });
+
+        var table = $('#datatable-fixed-header').DataTable({
+          fixedHeader: true
+        });
+
+        TableManageButtons.init();
+      });
+    </script>
+    <!-- /Datatables -->
+  </body>
+</html>

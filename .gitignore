@@ -1,0 +1,6 @@
+*.pyc
+*.log 
+*.pub
+*.ini
+templates/.ropeproject
+mozbx_server/.ropeproject

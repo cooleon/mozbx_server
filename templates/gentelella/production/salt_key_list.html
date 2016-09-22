@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Gentallela Alela! | </title>
+
+    <!-- Bootstrap -->
+    <link href="/static/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="/static/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="/static/vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="/static/css/custom.css" rel="stylesheet">
+  </head>
+
+       {% include 'gentelella/production/nav.html' %}
+        <!-- /top navigation -->
+
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <div class="">
+
+
+              <div class="clearfix"></div>
+
+              <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <div class="x_content">
+                        <button data-toggle="dropdown" class="btn btn-success btn-sm dropdown-toggle" type="button" aria-expanded="false">节点 <span class="caret"></span></button>
+                        <ul role="menu" class="dropdown-menu">
+                              {% for node in node_all %}
+                              <li><a href="./?node_name={{ node }}">{{ node }}</a></li>
+                              {% endfor %}
+                        </ul>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    </div>
+                    <div class="clearfix"></div>
+                  </div>
+
+                  <div class="x_content">
+
+                    <p>表格中的主机，已经与Salt server建立了key信任，可以添加主机到资产，或者<code>删除key</code>。（请谨慎操作）</p>
+
+                    <div class="table-responsive">
+                        <div>
+                     <span id="spanFirstt">第一页</span>
+                     <span id="spanPret">上一页</span>
+                     <span id="spanNextt">下一页</span>
+                     <span id="spanLastt">最后一页</span> 第<span id="spanPageNumt"></span>页/共<span id="spanTotalPaget"></span>页 
+                        </div>
+                        <div>
+                      <table class="table table-striped jambo_table bulk_action">
+                        <thead>
+                          <tr class="headings">
+                            <th>
+                              <input type="checkbox" id="check-all" class="flat">
+                            </th>
+                            <th class="column-title">序号 </th>
+                            <th class="column-title">节点 </th>
+                            <th class="column-title">主机名 </th>
+                            <th class="column-title">操作 </th>
+                            </th>
+                            <th class="bulk-actions" colspan="7">
+                              <a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
+                            </th>
+                          </tr>
+                        </thead>
+
+                        <tbody id="tablelsw">
+                        {% for minion in minions %}
+                          <tr class="even pointer">
+                            <td class="a-center ">
+                              <input type="checkbox" class="flat" name="table_records">
+                            </td>
+                            <td class=" ">{{ forloop.counter }}</td>
+                            <td class=" ">{{ node_name }}</td>
+                            <td class=" ">{{ minion }}</td>
+                            <td class=" ">
+                                <a class="btn btn-warning btn-xs pull-right" href="./salt/?node_name={{ node_name }}&host_name={{ minion }}"><i class="fa fa-minus"></i>&nbsp;删除key</a>
+                                <a class="btn btn-info btn-xs pull-right" href="/assets/update_host/?node_name={{ node_name }}&host_name={{ minion }}"><i class="fa fa-plus"></i>&nbsp;添加资产</a>
+                            </td>
+                          </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                        </div>
+                        <div>
+                        <span id="spanFirst">第一页</span>
+                        <span id="spanFirst">第一页</span>
+                        <span id="spanPre">上一页</span>
+                        <span id="spanNext">下一页</span>
+                        <span id="spanLast">最后一页</span> 第<span id="spanPageNum"></span>页/共<span id="spanTotalPage"></span>页 
+                        <a class="btn btn-danger btn-xs pull-right" href="./salt/?node_name={{ node_name }}&host_name={{ minion }}"><i class="fa fa-flash"></i>&nbsp;删除全部key</a>
+                        <a class="btn btn-primary btn-xs pull-right" href="/assets/update_host/?node_name={{ node_name }}&host_name=ALL_Host"><i class="fa fa-plug"></i>&nbsp;添加全部硬件资产</a>
+                        <a class="btn btn-success btn-xs pull-right" href="/zabbix/host_get/?node_name={{ node_name }}"><i class="fa fa-folder-open-o"></i>&nbsp;获取全部软件信息</a>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <div class="x_content">
+                        <h2>节点信息 </h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    </div>
+                    <div class="clearfix"></div>
+                  </div>
+
+                  <div class="x_content">
+
+                    <p>Add class <code>bulk_action</code> to table for bulk actions options on row select</p>
+
+                    {% if minions_count %}
+                    <div class="animated flipInY col-lg-5 col-md-5 col-sm-6 col-xs-8">
+                          <div class="tile-stats">
+                              <div class="icon"><i class="fa fa-linux"></i>
+                              </div>
+                              <div class="count">&nbsp;{{ node_name }}</div>
+                              <h3>Salt stack server</h3>
+                              <p>{{ node_slt.salt_url }}
+                              <button class="btn btn-xs btn-primary pull-right"><i class="fa fa-book"></i>详情</button>
+                              </p>
+                          </div>
+                    </div>
+                    <div class="animated flipInY col-lg-5 col-md-5 col-sm-6 col-xs-8">
+                          <div class="tile-stats">
+                              <div class="icon"><i class="fa fa-plug"></i> </div>
+                              <div class="count">&nbsp;{{ minions_count }}</div>
+                              <h3>Salt minions</h3>
+                              <p>管理的主机数量。
+                              </p>
+                          </div>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="/static/vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="/static/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="/static/vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="/static/vendors/nprogress/nprogress.js"></script>
+    <!-- iCheck -->
+    <script src="/static/vendors/iCheck/icheck.min.js"></script>
+
+    <!-- Custom Theme Scripts -->
+    <script src="/static/js/custom.js"></script>
+    <script>
+      // JavaScript Document By lishewen
+      var theTable = document.getElementById("tablelsw");
+      var totalPage = document.getElementById("spanTotalPage");
+      var pageNum = document.getElementById("spanPageNum");
+
+      var spanPre = document.getElementById("spanPre");
+      var spanNext = document.getElementById("spanNext");
+      var spanFirst = document.getElementById("spanFirst");
+      var spanLast = document.getElementById("spanLast");
+
+      var totalPaget = document.getElementById("spanTotalPaget");
+      var pageNumt = document.getElementById("spanPageNumt");
+
+      var spanPret = document.getElementById("spanPret");
+      var spanNextt = document.getElementById("spanNextt");
+      var spanFirstt = document.getElementById("spanFirstt");
+      var spanLastt = document.getElementById("spanLastt");
+
+      var numberRowsInTable = theTable.rows.length;
+      var pageSize = 10;
+      var page = 1;
+
+      //下一页
+      function next(){
+
+          hideTable();
+
+          currentRow = pageSize * page;
+          maxRow = currentRow + pageSize;
+          if ( maxRow > numberRowsInTable ) maxRow = numberRowsInTable;
+          for ( var i = currentRow; i< maxRow; i++ ){
+              theTable.rows[i].style.display = '';
+          }
+          page++;
+
+          if ( maxRow == numberRowsInTable ) { nextText(); lastText(); }
+          showPage();
+          preLink();
+          firstLink();
+      }
+
+      //上一页
+      function pre(){
+
+          hideTable();
+
+          page--;
+
+          currentRow = pageSize * page;
+          maxRow = currentRow - pageSize;
+          if ( currentRow > numberRowsInTable ) currentRow = numberRowsInTable;
+          for ( var i = maxRow; i< currentRow; i++ ){
+              theTable.rows[i].style.display = '';
+          }
+
+
+          if ( maxRow == 0 ){ preText(); firstText(); }
+          showPage();
+          nextLink();
+          lastLink();
+      }
+
+      //第一页
+      function first(){
+          hideTable();
+          page = 1;
+          for ( var i = 0; i<pageSize; i++ ){
+              theTable.rows[i].style.display = '';
+          }
+          showPage();
+
+          preText();
+          nextLink();
+          lastLink();
+      }
+
+      //最后一页
+      function last(){
+          hideTable();
+          page = pageCount();
+          currentRow = pageSize * (page - 1);
+          for ( var i = currentRow; i<numberRowsInTable; i++ ){
+              theTable.rows[i].style.display = '';
+          }
+          showPage();
+
+          preLink();
+          nextText();
+          firstLink();
+      }
+
+      function hideTable(){
+          for ( var i = 0; i < numberRowsInTable; i++ ){
+              theTable.rows[i].style.display = 'none';
+          }
+      }
+
+      function showPage(){
+          pageNum.innerHTML = page;
+          pageNumt.innerHTML = page;
+      }
+
+      //总共页数
+      function pageCount(){
+          var count = 0;
+          if ( numberRowsInTable%pageSize != 0 ) count = 1;
+          return parseInt(numberRowsInTable/pageSize) + count;
+      }
+
+      //显示链接
+      function preLink(){ spanPre.innerHTML = "<a href='javascript:pre();'>上一页</a>"; spanPret.innerHTML = "<a href='javascript:pre();'>上一页</a>";}
+      function preText(){ spanPre.innerHTML = "上一页"; spanPret.innerHTML = "上一页"; }
+
+      function nextLink(){ spanNext.innerHTML = "<a href='javascript:next();'>下一页</a>"; spanNextt.innerHTML = "<a href='javascript:next();'>下一页</a>";}
+      function nextText(){ spanNext.innerHTML = "下一页"; spanNextt.innerHTML = "下一页";}
+
+      function firstLink(){ spanFirst.innerHTML = "<a href='javascript:first();'>第一页</a>"; spanFirstt.innerHTML = "<a href='javascript:first();'>第一页</a>";}
+      function firstText(){ spanFirst.innerHTML = "第一页"; spanFirstt.innerHTML = "第一页";}
+
+      function lastLink(){ spanLast.innerHTML = "<a href='javascript:last();'>最后一页</a>"; spanLastt.innerHTML = "<a href='javascript:last();'>最后一页</a>";}
+      function lastText(){ spanLast.innerHTML = "最后一页"; spanLastt.innerHTML = "最后一页";}
+
+      //隐藏表格
+      function hide(){
+          for ( var i = pageSize; i<numberRowsInTable; i++ ){
+              theTable.rows[i].style.display = 'none';
+          }
+
+          totalPage.innerHTML = pageCount();
+          pageNum.innerHTML = '1';
+
+          totalPaget.innerHTML = pageCount();
+          pageNumt.innerHTML = '1';
+
+          nextLink();
+          lastLink();
+      }
+
+      hide();
+   </script>
+  </body>
+</html>
