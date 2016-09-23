@@ -33,3 +33,6 @@ def key_list(request):
         print e
         return render(request,'gentelella/production/salt_key_list.html',locals())
     return render(request,'gentelella/production/salt_key_list.html',locals())
+
+def host_info(request):
+    pass

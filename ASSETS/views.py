@@ -77,20 +77,36 @@ def assets_host(request):
         return render(request,'gentelella/production/assets_host_list.html',locals())
 
 
-def details(request):
+def modal(request):
     try:
         node_id = request.GET['node_id']
         host_id = request.GET['host_id']
-        host_details = host.objects.get(nodename_id=node_id, hostid=host_id)
-        form = hostForm(instance=host_details)
-        #print host_details._meta.get_field('name').verbose_name
+        host_modal = host.objects.get(nodename_id=node_id, hostid=host_id)
+        form = hostForm(instance=host_modal)
+        #print host_modal._meta.get_field('name').verbose_name
         verbose_dic = {}
-        field_name = host_details._meta.get_all_field_names()
+        field_name = host_modal._meta.get_all_field_names()
         for field in field_name:
-            #verbose_dic[host_details._meta.get_field(field).verbose_name] = str(host_details._meta.get_field(field).default)
-            verbose_dic[host_details._meta.get_field(field).verbose_name] = getattr(host_details, field)
-        return render(request, "gentelella/production/assets_host_details.html",locals())
+            #verbose_dic[host_modal._meta.get_field(field).verbose_name] = str(host_modal._meta.get_field(field).default)
+            verbose_dic[host_modal._meta.get_field(field).verbose_name] = getattr(host_modal, field)
+        return render(request, "gentelella/production/assets_host_modal.html",locals())
     except Exception,e:
         print e
         return HttpResponseRedirect("/assets/hosts/")
 
+def details(request):
+    try:
+        node_id = request.GET['node_id']
+        host_id = request.GET['host_id']
+        host_modal = host.objects.get(nodename_id=node_id, hostid=host_id)
+        form = hostForm(instance=host_modal)
+        #print host_modal._meta.get_field('name').verbose_name
+        verbose_dic = {}
+        field_name = host_modal._meta.get_all_field_names()
+        for field in field_name:
+            #verbose_dic[host_modal._meta.get_field(field).verbose_name] = str(host_modal._meta.get_field(field).default)
+            verbose_dic[host_modal._meta.get_field(field).verbose_name] = getattr(host_modal, field)
+        return render(request, "gentelella/production/assets_host_details.html",locals())
+    except Exception,e:
+        print e
+        return HttpResponseRedirect("/assets/hosts/")
