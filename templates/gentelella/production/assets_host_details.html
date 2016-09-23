@@ -1,0 +1,29 @@
+<html>
+  <body>
+<div class="x_panel">
+         <div class="title">
+           <h2 class="text-center">{{ host_details.name }}<small>主机信息</small></h2>
+           <ul class="nav navbar-right panel_toolbox">
+               <li><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+             </li>
+           </ul>
+           <div class="clearfix"></div>
+         </div>
+           <fieldset>
+            <form class="form-horizontal" role="form" action="/assets/update_host/" method="POST" enctype="multipart/form-data">
+               {% csrf_token %}
+                {% for field in form %}
+                <div class="form-group">
+                  <div class="col-sm-10">
+                    {{ field.label_tag }} {{ field }}
+                    {{ fiedl.errors }}
+                  </div>
+                </div>
+                {% endfor %}
+               <button type="submit" class="btn btn-primary pull-right">Save</button>
+               <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+           </fieldset>
+            </form>
+</div>
+  </body>
+</html>

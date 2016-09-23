@@ -62,6 +62,32 @@ def das_json(request):
                                                 level__gte=3).count()
         dump_list.append(dump_dic)
     return HttpResponse(json.dumps(dump_list), content_type="application/json")
+
+
+def resolve_json(request):
+    days = 30
+    unow = datetime.datetime.now()
+    uzero = datetime.datetime(unow.year, unow.month, unow.day, 0, 0, 0)
+    d_start =  uzero - datetime.timedelta(days=days)
+    d_start = timezone.make_aware(d_start, TZ)
+    dump_list = []
+    for day in xrange(days):
+        dump_dic = {}
+        d_start =  d_start + datetime.timedelta(days=1)
+        d_end =  d_start + datetime.timedelta(days=1)
+        dump_dic["day"] = str(d_start)[5:10].lstrip('0')
+        dump_dic["war"] = Issues.objects.filter(problemtime__gt=d_start,
+                                                problemtime__lt=d_end,
+                                                resolve=1,
+                                                level=2).count()
+        dump_dic["dan"] = Issues.objects.filter(problemtime__gt=d_start,
+                                                problemtime__lt=d_end,
+                                                resolve=1,
+                                                level__gte=3).count()
+        dump_list.append(dump_dic)
+    return HttpResponse(json.dumps(dump_list), content_type="application/json")
+
+
     '''
     for date_str in month:
         dump_dic = {}
@@ -83,8 +109,28 @@ def srv_json(request):
         dump_dic = {}
         dump_dic["srv"] = srv_str
         dump_dic["war"] = Issues.objects.filter(locate__contains=srv_str,
+                                                resolve=0,
                                                 level=2).count()
         dump_dic["dan"] = Issues.objects.filter(locate__contains=srv_str,
+                                                resolve=0,
+                                                level__gte=3).count()
+        dump_dic["hosts"] = srv_total[srv_list.index(srv_str)]
+        dump_list.append(dump_dic)
+    return HttpResponse(json.dumps(dump_list), content_type="application/json")
+
+
+def resolve_srv_json(request):
+    srv_list = get_srv_list("name")
+    srv_total = get_srv_list("total")
+    dump_list = []
+    for srv_str in srv_list:
+        dump_dic = {}
+        dump_dic["srv"] = srv_str
+        dump_dic["war"] = Issues.objects.filter(locate__contains=srv_str,
+                                                resolve=1,
+                                                level=2).count()
+        dump_dic["dan"] = Issues.objects.filter(locate__contains=srv_str,
+                                                resolve=1,
                                                 level__gte=3).count()
         dump_dic["hosts"] = srv_total[srv_list.index(srv_str)]
         dump_list.append(dump_dic)

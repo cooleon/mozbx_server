@@ -2,5 +2,6 @@
 *.log 
 *.pub
 *.ini
+get_web/zbx_in_db.log
 templates/.ropeproject
 mozbx_server/.ropeproject

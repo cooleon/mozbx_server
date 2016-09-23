@@ -5,6 +5,7 @@ from get_web.models import node, host
 from SALT.core.salt_token_id import token_id
 from SALT.core.salt_https_api import salt_api_token
 from django.shortcuts import render, render_to_response, HttpResponseRedirect, HttpResponse
+from ASSETS.forms import hostForm
 import chardet
 
 # Create your views here.
@@ -75,11 +76,21 @@ def assets_host(request):
         node_all = node.objects.all()
         return render(request,'gentelella/production/assets_host_list.html',locals())
 
+
 def details(request):
     try:
-        node_name = request.GET['node_name'].encode('utf8')
-        host_name = request.GET['host_name']
-        host_details = host.objects.get(nodename__name__exact=node_name, name=host_name)
-        return HttpResponse("ERROE")
+        node_id = request.GET['node_id']
+        host_id = request.GET['host_id']
+        host_details = host.objects.get(nodename_id=node_id, hostid=host_id)
+        form = hostForm(instance=host_details)
+        #print host_details._meta.get_field('name').verbose_name
+        verbose_dic = {}
+        field_name = host_details._meta.get_all_field_names()
+        for field in field_name:
+            #verbose_dic[host_details._meta.get_field(field).verbose_name] = str(host_details._meta.get_field(field).default)
+            verbose_dic[host_details._meta.get_field(field).verbose_name] = getattr(host_details, field)
+        return render(request, "gentelella/production/assets_host_details.html",locals())
     except Exception,e:
-        return HttpResponseRedirect("/assets/hosts/?node_name=" + node_name)
+        print e
+        return HttpResponseRedirect("/assets/hosts/")
+

@@ -82,9 +82,9 @@
               <div class="col-md-6 col-sm-6 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>30天内告警<small>未处理</small></h2>
+                    <h2>30天内告警<small>未解决</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
                       </li>
                       <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
@@ -100,7 +100,7 @@
                     </ul>
                     <div class="clearfix"></div>
                   </div>
-                  <div class="x_content">
+                  <div class="x_content" style="display: none;">
                     <canvas id="lineChart"></canvas>
                   </div>
                 </div>
@@ -109,9 +109,9 @@
               <div class="col-md-6 col-sm-6 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>各节点告警<small>未处理</small></h2>
+                    <h2>30天告警<small>已解决</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
                       </li>
                       <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
@@ -127,19 +127,47 @@
                     </ul>
                     <div class="clearfix"></div>
                   </div>
-                  <div class="x_content">
+                  <div class="x_content" style="display: none;">
+                    <canvas id="lineChart1"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>各节点告警<small>未解决</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content" style="display: none;">
                     <canvas id="mybarChart"></canvas>
                   </div>
                 </div>
              </div>
 
 
+
               <div class="col-md-6 col-sm-6 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>月份告警<small>未处理</small></h2>
+                    <h2>各节点告警<small>已解决</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
                       </li>
                       <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
@@ -155,18 +183,19 @@
                     </ul>
                     <div class="clearfix"></div>
                   </div>
-                  <div class="x_content">
-                    <canvas id="eChart"></canvas>
+                  <div class="x_content" style="display: none;">
+                    <canvas id="mybarChart1"></canvas>
                   </div>
                 </div>
-              </div>
+             </div>
+
 
               <div class="col-md-6 col-sm-6 col-xs-6">
                 <div class="x_panel">
                   <div class="x_title">
                     <h2>主机数量<small>监控中</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
                       </li>
                       <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
@@ -182,7 +211,7 @@
                     </ul>
                     <div class="clearfix"></div>
                   </div>
-                  <div class="x_content">
+                  <div class="x_content" style="display: none;">
                     <canvas id="pieChart"></canvas>
                   </div>
                 </div>
@@ -194,7 +223,7 @@
                   <div class="x_title">
                       <h2>今日告警</h2>
                     <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
                       </li>
                       <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
@@ -229,7 +258,7 @@
                         <tr>
                             <td>{{ item.locate }}</td>
                             <td>{{ item.hostname }}</td>
-                            <td>{{ item.problemtime|date:"y-m-d H:i:s" }}</td>
+                            <td>{{ item.problemtime|date:"H:i:s" }}</td>
                             <td>{{ item.desciptions }}</td>
                             {% if item.level == 1 %}
                             <td><span class="label label-info">普通</span></td>
@@ -372,6 +401,47 @@
       });
            });
 
+            $.get('/resolvejson/', function(json) {
+                    var lables = json.map(function(item) {
+                            return item.day;
+                            });
+                    var danger = json.map(function(item) {
+                            return item.dan;
+                            });
+                    var warnning = json.map(function(item) {
+                            return item.war;
+                            });
+
+      var ctx = document.getElementById("lineChart1");
+      var lineChart1 = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: lables,
+          datasets: [{
+            label: "危险",
+            backgroundColor: "rgba(3, 88, 106, 0.3)",
+            borderColor: "rgba(3, 88, 106, 0.70)",
+            pointBorderColor: "rgba(3, 88, 106, 0.70)",
+            pointBackgroundColor: "rgba(3, 88, 106, 0.70)",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgba(151,187,205,1)",
+            pointBorderWidth: 1,
+            data:  danger
+          }, {
+            label: "警告",
+            backgroundColor: "rgba(38, 185, 154, 0.31)",
+            borderColor: "rgba(38, 185, 154, 0.7)",
+            pointBorderColor: "rgba(38, 185, 154, 0.7)",
+            pointBackgroundColor: "rgba(38, 185, 154, 0.7)",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointBorderWidth: 1,
+            data: warnning
+          }]
+        },
+      });
+           });
+
       // Bar chart
             $.get('/srvjson/', function(json) {
                     var lables = json.map(function(item) {
@@ -399,6 +469,85 @@
           }, {
             label: '警告',
             backgroundColor: "#F8E000",
+            data:  warnning
+          }]
+        },
+
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
+        }
+      });
+
+      // Pie chart
+      var ctx = document.getElementById("pieChart");
+      var data = {
+        datasets: [{
+          data: hosts,
+          backgroundColor: [
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor(),
+            getRandomColor()
+          ],
+          label: 'My dataset' // for legend
+        }],
+        labels: lables,
+      };
+
+      var pieChart = new Chart(ctx, {
+        data: data,
+        type: 'pie',
+        otpions: {
+          legend: false
+        }
+      });
+
+
+           });
+      //bar mybarChart1
+            $.get('/resolvesrvjson/', function(json) {
+                    var lables = json.map(function(item) {
+                            return item.srv;
+                            });
+                    var danger = json.map(function(item) {
+                            return item.dan;
+                            });
+                    var warnning = json.map(function(item) {
+                            return item.war;
+                            });
+                    var hosts = json.map(function(item) {
+                            return item.hosts;
+                            });
+
+      var ctx = document.getElementById("mybarChart1");
+      var mybarChart1 = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: lables,
+          datasets: [{
+            label: '危险',
+            backgroundColor: "#03586A",
+            data: danger
+          }, {
+            label: '警告',
+            backgroundColor: "#26B99A",
             data:  warnning
           }]
         },
