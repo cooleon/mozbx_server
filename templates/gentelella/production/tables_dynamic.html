@@ -69,6 +69,7 @@
                           <th>主机名</th>
                           <th>警告时间</th>
                           <th>事件</th>
+                          <th>备注</th>
                           <th>警告等级</th>
                         </tr>
                       </thead>
@@ -79,17 +80,19 @@
                         <tr>
                             <td>{{ item.locate }}</td>
                             <td>{{ item.hostname }}</td>
-                            <td>{{ item.problemtime|date:"Y-m-d H:i:s" }}</td>
+                            <td>{{ item.problemtime|date:"y-m-d H:i:s" }}</td>
                             <td>{{ item.desciptions }}</td>
+                            <td>{{ item.editor }}</td>
                             {% if item.level == 1 %}
-                            <td><span class="label label-info">普通</span></td>
+                            <td><span class="label label-info">普通</span>
                             {% elif item.level == 2 %}
-                            <td><span class="label label-warning">警告</span></td>
+                            <td><span class="label label-warning">警告</span>
                             {% elif item.level == 3 %}
-                            <td><span class="label label-danger">危险</span></td>
+                            <td><span class="label label-danger">危险</span>
                             {% elif item.level == 4 %}
-                            <td><span class="label label-danger">灾难</span></td>
+                            <td><span class="label label-danger">灾难</span>
                             {% endif %}
+                            <a class="btn-info btn-sm" data-toggle="modal" href="/issues/?id={{ item.id  }}" data-target="#showModal"><i class="fa fa-plus"></i>&nbsp;备注</a></td>
                           </tr>
                         {% endfor %}
                       </tbody>
@@ -97,11 +100,20 @@
                   </div>
                 </div>
               </div>
+              <!-- Modal -->
+        <!-- 模态框（Modal） -->
+        <div class="modal fade" id="showModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" >
+                <div class="modal-content">
+                    ...
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
 
               <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel">
+              <div class="x_panel">
                   <div class="x_title">
-                    <h2>告警解决<small>告警信息</small></h2>
+                      <h2>告警解决<small>告警信息</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -130,8 +142,9 @@
                           <th>主机名</th>
                           <th>警告时间</th>
                           <th>事件</th>
-                          <th>警告等级</th>
                           <th>解决时间</th>
+                          <th>备注</th>
+                          <th>警告/是否解决</th>
                         </tr>
                       </thead>
 
@@ -141,8 +154,10 @@
                         <tr>
                             <td>{{ item.locate }}</td>
                             <td>{{ item.hostname }}</td>
-                            <td>{{ item.problemtime|date:"Y-m-d H:i:s" }}</td>
+                            <td>{{ item.problemtime|date:"y-m-d H:i:s" }}</td>
                             <td>{{ item.desciptions }}</td>
+                            <td>{{ item.resolvetime|date:"y-m-d H:i:s" }}</td>
+                            <td>{{ item.editor }}</td>
                             {% if item.level == 1 %}
                             <td><span class="label label-info">普通
                             {% elif item.level == 2 %}
@@ -152,8 +167,8 @@
                             {% elif item.level == 4 %}
                             <td><span class="label label-danger">灾难
                             {% endif %}
-                            </span>&nbsp;<span class="label label-success">已经解决</span></td>
-                            <td>{{ item.resolvetime|date:"Y-m-d H:i:s" }}</td>
+                            </span>&nbsp;<span class="label label-success">解决</span>
+                            <a class="btn-info btn-sm" data-toggle="modal" href="/issues/?id={{ item.id  }}" data-target="#showModal"><i class="fa fa-plus"></i>&nbsp;备注</a></td>
                           </tr>
                         {% endfor %}
                     </table>
@@ -269,6 +284,11 @@
 
         TableManageButtons.init();
       });
+    </script>
+    <script>
+    $("#showModal").on("hidden.bs.modal", function() {
+        $(this).removeData("bs.modal");
+    });
     </script>
     <!-- /Datatables -->
   </body>

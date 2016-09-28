@@ -4,7 +4,7 @@ from django.shortcuts import render, render_to_response, HttpResponseRedirect
 
 from SALT.core.salt_https_api import salt_api_token
 from SALT.core.salt_token_id import token_id
-from get_web.models import node
+from get_web.models import node, host
 
 def key_list(request):
     node_all = node.objects.all()
@@ -36,3 +36,18 @@ def key_list(request):
 
 def host_info(request):
     pass
+
+def execute(request):
+    node_all = node.objects.all()
+    try:
+        nodeid = request.GET['node_id']
+        node_slt = node.objects.get(id=int(nodeid))
+        minions = host.objects.filter(nodename_id=nodeid)
+        #token_api_id = token_id(node_slt.salt_user, node_slt.salt_passwd, node_slt.salt_url)
+        #list = salt_api_token({'client': 'local', 'fun': 'network.netstat', 'tgt': host_db.name, 'timeout': 100}, node_slt.salt_url, {"X-Auth-Token": token_api_id})
+        #master_status = list.run()
+        return render(request, "gentelella/production/salt_execute.html",locals())
+    except Exception,e:
+        print e
+        return render(request, "gentelella/production/salt_execute.html",locals())
+

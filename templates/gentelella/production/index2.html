@@ -247,8 +247,8 @@
                           <th>主机名</th>
                           <th>警告时间</th>
                           <th>事件</th>
-                          <th>警告等级</th>
-                          <th>是否解决</th>
+                          <th>备注</th>
+                          <th>警告/解决</th>
                         </tr>
                       </thead>
 
@@ -260,20 +260,22 @@
                             <td>{{ item.hostname }}</td>
                             <td>{{ item.problemtime|date:"H:i:s" }}</td>
                             <td>{{ item.desciptions }}</td>
+                            <td>{{ item.editor }}</td>
                             {% if item.level == 1 %}
-                            <td><span class="label label-info">普通</span></td>
+                            <td><span class="label label-info">普通</span>
                             {% elif item.level == 2 %}
-                            <td><span class="label label-warning">警告</span></td>
+                            <td><span class="label label-warning">警告</span>
                             {% elif item.level == 3 %}
-                            <td><span class="label label-danger">危险</span></td>
+                            <td><span class="label label-danger">危险</span>
                             {% elif item.level == 4 %}
-                            <td><span class="label label-danger">灾难</span></td>
+                            <td><span class="label label-danger">灾难</span>
                             {% endif %}
                             {% if item.resolve == 1 %}
-                            <td><span class="label label-success">已经解决</span></td>
+                            <span class="label label-success">解决</span>
                             {% else %}
-                            <td><span class="label label-danger">未解决</span></td>
+                            <span class="label label-danger">未解决</span>
                             {% endif %}
+                            <a class="btn-info btn-sm" data-toggle="modal" href="/issues/?id={{ item.id  }}" data-target="#showModal"><i class="fa fa-plus"></i>&nbsp;备注</a></td>
                           </tr>
                         {% endfor %}
                       </tbody>
@@ -284,6 +286,14 @@
           </div>
         </div>
         <!-- /page content -->
+        <!-- 模态框（Modal） -->
+        <div class="modal fade" id="showModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" >
+                <div class="modal-content">
+                    ...
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
 
         <!-- footer content -->
         <footer>
@@ -666,6 +676,11 @@
 
         TableManageButtons.init();
       });
+    </script>
+    <script>
+    $("#showModal").on("hidden.bs.modal", function() {
+        $(this).removeData("bs.modal");
+    });
     </script>
     <!-- /Datatables -->
   </body>

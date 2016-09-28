@@ -2,7 +2,7 @@
   <body>
 <div class="x_panel">
          <div class="title">
-           <h1 class="text-center">{{ host_details.name }}<small>&nbsp;主机信息</small>
+           <h1 class="text-center">{{ issues.hostname }}<small>&nbsp;主机故障信息</small>
            <ul class="nav navbar-right panel_toolbox">
                <li><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
              </li>
@@ -11,7 +11,7 @@
            <div class="clearfix"></div>
          </div>
            <fieldset>
-            <form class="form-horizontal" role="form" action="/assets/update_host/" method="POST" enctype="multipart/form-data">
+            <form class="form-horizontal" role="form" action="/issues/" method="POST" enctype="multipart/form-data">
                {% csrf_token %}
                 {% for field in form %}
             <div class="row">
@@ -24,7 +24,7 @@
                       <th class="column-title">值 </th>
                 </thead>
                 <tbody>
-                    {% elif forloop.counter = 14  %}
+                    {% elif forloop.counter = 8  %}
                 </tbody>
                 </table>
             </div>
@@ -35,10 +35,10 @@
                       <th class="column-title">属性 </th>
                       <th class="column-title">值 </th>
                 </thead>
-                    {% endif  %}
+                    {% endif %}
                   <tr>
                       <td>{{ field.label_tag }}</td>
-                      <td>{{ field }}</td>
+                      <td>{{ field }} </td>
                   </tr>
                     {{ fiedl.errors }}
                 {% endfor %}

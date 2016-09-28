@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Gentallela Alela! | </title>
+
+    <!-- Bootstrap -->
+    <link href="/static/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="/static/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="/static/css/custom.css" rel="stylesheet">
+  </head>
+
+       {% include 'gentelella/production/nav.html' %}
+
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <div class="">
+            <div class="clearfix"></div>
+
+            <div class="row">
+
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel" style="height:600px;">
+                  <div class="x_title">
+                    <h2>执行命令</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content" style="display: block;">
+                      <div class="container">
+                          <h2>
+                              {#        机房#}
+                              <label for="idc" disabled="disabled"></label>
+                              <div class="btn-group pull-right">
+                                  <a class="btn btn-info " href="/admin/SALT/module/add/" target="_blank">
+                                      <span class="glyphicon glyphicon-plus"></span>&nbsp;模块</a>
+                                  <a class="btn btn-info " href="/admin/SALT/command/add/" target="_blank">
+                                      <span class="glyphicon glyphicon-plus"></span>&nbsp;命令</a>
+                                  <button class="btn btn-info" title="命令帮助信息" onclick="cmd_help()"  data-toggle="modal" data-target="#cmd_modal">
+                                      <span class="glyphicon glyphicon-question-sign"></span>&nbsp;帮助</button>
+                                  {#            Server选择#}
+                                  <div class="btn-group pull-right dropdown">
+                                      {% if node_slt.name %}
+                                      <a href="#" class="btn btn-info dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                          &nbsp;{{ node_slt.name }}&nbsp;<span class="caret"></span></a>
+                                      {% else %}
+                                      <a href="#" class="btn btn-info dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                          &nbsp;请选择一个节点&nbsp;<span class="caret"></span></a>
+                                      {% endif %}
+                                      <ul class="dropdown-menu">
+                                          {% for node in node_all %}
+                                          <button type="button" class="btn btn-sm btn-default"><a href="./?node_id={{ node.id }}">{{ node }}</a></button>
+                                          {% endfor %}
+                                      </ul>
+                                  </div>
+                              </div>
+                          </h2>
+                          <br>
+                          {% if error %}<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert">&times;</a>{{ error }}</div>{% endif %}
+                          {% if success %}<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert">&times;</a>{{ success }}</div>{% endif %}
+                          {#        命令#}
+                          <div class="row" >
+                              {#        动作类型#}
+                              <div class="col-sm-3 col-md-3">
+                                  <div class="form-group">
+                                      <label for="client" class="sr-only">client</label>
+                                      <select class="form-control" id="client">
+                                          <option value="local_async" selected="selected">Local_Async</option>
+                                          <option value="local">Local</option>
+                                          <option value="runner_async">Runner_Async</option>
+                                          <option value="runner">Runner</option>
+                                          <option value="ssh">Ssh</option>
+                                          <option value="wheel">Wheel</option>
+                                      </select>
+                                  </div>
+                              </div>
+                              {#        目标类型#}
+                              <div class="col-sm-3 col-md-3">
+                                  <div class="form-group">
+                                      <label for="tgt_type" class="sr-only">Target Type</label>
+                                      <select class="form-control" id="tgt_type">
+                                          <option value="glob" selected="selected">Glob</option>
+                                          <option value="grain"       >Grain</option>
+                                          <option value="grain_pcre" >Grain_Pcre</option>
+                                          <option value="list"        >List</option>
+                                          <option value="nodegroup"  >NodeGroup</option>
+                                          <option value="pcre"        >pcre</option>
+                                          <option value="pillar"      >Pillar</option>
+                                          <option value="pillar_pcre">Pillar_Pcre</option>
+                                          <option value="Range"       >Range</option>
+                                          <option value="compound"   >Compound</option>
+                                      </select>
+                                  </div>
+                              </div>
+                              {#        模块#}
+                              <div class="col-sm-3 col-md-3">
+                                  <div class="form-group">
+                                      <label for="module" class="sr-only">Module</label>
+                                      <select class="form-control" id="module">
+                                          <option value="">——Module——</option>
+                                          {% for module in module_list %}
+                                          <option value="{{ module.name }}">{{ module.name }}</option>
+                                          {% endfor %}
+                                      </select>
+                                  </div>
+                              </div>
+                              {#        命令#}
+                              <div class="col-sm-3 col-md-3">
+                                  <div class="form-group">
+                                      <label for="fun" class="sr-only">Function</label>
+                                      <select class="form-control" id="fun">
+                                          <option value="">——Func———</option>
+                                      </select>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              {#        目标#}
+                              <div class="col-sm-6 col-md-6">
+                                  <div class="form-group">
+                                      <label for="tgt" class="sr-only">Target</label>
+                                      <input type="text" class="form-control" placeholder="Target" id="tgt">
+                                  </div>
+                              </div>
+                              {#        参数#}
+                              <div class="col-sm-5 col-md-5">
+                                  <div class="form-group">
+                                      <label for="arg" class="sr-only">*arg</label>
+                                      <input class="form-control" type="text" value="" id="arg" placeholder="*args，用逗号分隔参数，使用等号定义参数的键和值。"
+                                                                                                onkeypress="if(event.keyCode==13) {run.click();return false;}">
+                                  </div>
+                              </div>
+                              {#        执行#}
+                              <div class="col-sm-1 col-md-1">
+                                  <div class="form-group ">
+                                      <label for="run" class="sr-only">Execute</label>
+                                      <button type="button" id="run" class="form-control btn btn-success" title="执行命令">
+                                          <span class="glyphicon glyphicon-play"></span></button>
+                                  </div>
+                              </div>
+                          </div>
+                          {#        结果#}
+                          <div class="row">
+                              {#            分类#}
+                              <div class="col-sm-3 col-md-3">
+                                  {#            在线主机#}
+                                  <div class="form-group">
+                                      <label for="minions_up">Minions</label>
+                                      <select class="form-control" size="18"  id="minions_up" >
+                                          {% for u in minions %}
+                                          <option value="{{ u.name }}">{{ u.name }}</option>
+                                          {% endfor %}
+                                      </select>
+                                  </div>
+                                  {#            离线主机#}
+                                  {#                <div class="form-group">#}
+                                      {#                     <label for="minions_down">离线Minions</label>#}
+                                      {#                     <select class="form-control" size="10" id="minions_down" disabled="disabled">#}
+                                          {#                         {% for d in minions_down %}#}
+                                          {#                        <option value="{{ d }}">{{ d }}</option>#}
+                                          {#                        {% endfor %}#}
+                                          {#                     </select>#}
+                                      {#                 </div>#}
+                              </div>
+                              {#            结果#}
+                              <div class="col-sm-9 col-md-9">
+                                  <div class="form-group">
+                                      <label for="result" > </label>
+                                      <textarea id="result" readonly>[root@salt-master ~]#</textarea>
+                                  </div>
+                              </div>
+                          </div>
+                          {#        事件#}
+                          <div class="row">
+                              <div class="col-sm-12 col-md-12">
+                                  <div id="events"></div>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="modal fade" id="cmd_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                      <div class="modal-dialog">
+                          <div class="modal-content">
+                              <div class="modal-header text-center">
+                                  <h4>Salt命令<code>"<span id="cmd"></span>"</code>的帮助信息
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                  </h4>
+                              </div>
+                              <div class="modal-body" id="doc"></div>
+                              <div class="modal-footer">
+                                  <div class="btn-group pull-right">
+                                      <a class="btn btn-info" data-dismiss="modal">关闭</a>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="/static/vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="/static/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="/static/vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="/static/vendors/nprogress/nprogress.js"></script>
+    
+    <!-- Custom Theme Scripts -->
+    <script src="/static/js/custom.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            //类型条件
+            $('#tgt_type').change(function(){
+                var tgt_type = $(this).val();
+                var minions_up = document.getElementById("minions_up");
+                var tgt = document.getElementById("tgt");
+                if(tgt_type == 'list'){
+                    minions_up.disabled=false;
+                    minions_up.setAttribute("multiple","multiple"); //设为多选框
+                }
+                else if (tgt_type == 'glob'){
+                    minions_up.disabled=false;
+                    minions_up.removeAttribute("multiple"); //取消多选框
+                    var length = minions_up.options.length - 1;
+                    for(var i = length; i >= 0; i--) {
+                        minions_up[i].selected = false; //清除选择状态
+                    }
+                }
+                else{minions_up.disabled=true;}
+            });
+            //CLIENT+模块级联
+            $('#client').change(function () {
+                $('#module').html("<option value=''>——Module——</option>"); //初始化数据
+                var client = $(this).val();                 //获取当前选择对象的value值
+                $.getJSON("./SALT/command",{client:client},function(result){
+                    //返回值 result 在这里是一个列表
+                    for (var i = result.length - 1; i >= 0; i--) {
+                      // 把 result 的每一项作为选项显示在网页上
+                        $("<option value='"+result[i]+"'>"+result[i]+"</option>").appendTo("#module");
+                    }
+                });
+                return false; //不刷新页面
+            });
+            //模块+命令级联
+            $('#module').change(function () {
+                $('#fun').html("<option value=''>——Func——</option>"); //初始化数据
+                var module_name = $(this).val();                 //获取当前选择对象的value值
+                var client = $('#client').val();                 //获取当前选择对象的value值
+                $.getJSON("/SALT/command",{client:client,module_name:module_name},function(result){
+                    //返回值 result 在这里是一个列表
+                    for (var i = result.length - 1; i >= 0; i--) {
+                      // 把 result 的每一项作为选项显示在网页上
+                        $("<option value='"+result[i]+"'>"+result[i]+"</option>").appendTo("#fun");
+                    }
+                });
+                return false; //不刷新页面
+            });
+            //目标选择
+            $('#minions_up').change(function(){
+                var minions=$(this).val().toString();
+                $('#tgt').val(minions);
+            });
+            //执行按钮
+            $('#run').click(function(){
+                var client = $('#client').val();
+                var tgt_type = $('#tgt_type').val();
+                var tgt = $('#tgt').val();
+                var fun = $('#fun').val();
+                var arg = $('#arg').val();
+                var r=client.indexOf('runner');
+                var w=client.indexOf('wheel');
+                if( !tgt && r<0 && w<0 ){alert("目标不能为空！");}
+                else if(!fun){alert("请选择命令！");}
+                else {cmd_result(client,tgt_type,tgt,fun,arg)}
+            });
+        });
+        //设置一个定时器、一个计数器
+        var timer;
+        var count=0;
+        //执行命令功能
+        function cmd_result(client,tgt_type,tgt,fun,arg) {
+            var r=client.indexOf('runner');
+            var w=client.indexOf('wheel');
+            var s=client.indexOf('ssh');
+            var a=client.indexOf('async');
+            if ( r>=0 ){var command = '[root@salt-master ~]# salt-run '+fun+' '+arg}
+            if ( w>=0){ command = '[root@salt-master ~]# salt-run wheel.'+fun+' '+arg}
+            else if ( s>=0 ){command = '[root@salt-master ~]# salt-ssh "'+tgt+'" '+fun+' '+arg+' expre_type="'+tgt_type+'"';}
+            else{command = '[root@salt-master ~]# salt "'+tgt+'" '+fun+' '+arg+' expre_type="'+tgt_type+'"';}
+            var rv=document.getElementById('result');
+            rv.value=command;
+            $.getJSON("/SALT/execute_fun",{client:client,tgt_type:tgt_type,tgt:tgt,fun:fun,arg:arg},function(result){
+                if( a>=0 ) {//异步命令返回JID
+                    rv.value += "\nJID:" + result;
+                    //通过JID向后台获取详细结果，每隔1秒执行
+                    timer = window.setInterval(jid_info(result),1000);
+                }
+                else{//同步命令直接返回结果，字典类型存于数据库
+                    for (var k in result) {
+                        var v = result[k];
+                        if (typeof v != 'object') {
+                            rv.value += "\n" + k + ":" + v;
+                        }
+                        else {
+                            rv.value += "\n" + k + ":" + formatJson(v, true);
+                        }
+                    }
+                }
+            });
+            return false;
+        }
+        //获取任务详细信息功能
+        function jid_info(jid) {
+            var rv=document.getElementById('result');//返回结果的textarea对象
+             $.getJSON("/SALT/jid_info", {jid: jid}, function (result) {
+                for (var k in result) {
+                    var v = result[k]['return'];
+                    //k是minion，v是其return值，值为字典时只显示一个按钮，其结果使用formatJSON格式化后保存在一个隐藏的DIV中
+                    if (typeof v != 'object') {rv.value += "\n" + k + ":" + v;}
+                    else {rv.value += "\n" + k + ":" + formatJson(v, true);}
+                }
+                 ++count;
+                 //有结果返回或者刷新了15次就清空计时器
+                 if (result || count==15){window.clearInterval(timer); }
+            });
+            return false;
+        }
+
+        //获取命令帮助信息功能
+        function cmd_help() {
+            var cmd=$('#fun').val();
+            if (!cmd){$('#doc').html("<p class='text-center'>请选择命令！</p>");}
+            else {
+                var client = $('#client').val();
+                $('#cmd').html(cmd);
+                $.getJSON("/SALT/command", {client: client, cmd: cmd}, function (result) {
+                    $('#doc').html(result);
+                });
+                return false; //不刷新页面
+            }
+        }
+    </script>
+  </body>
+</html>

@@ -51,11 +51,12 @@ class host(models.Model):
     system = models.CharField(verbose_name=u"系统类型", max_length=32, blank=True, null=True, )
     system_cpuarch = models.CharField(max_length=32, blank=True, null=True, verbose_name=u"系统版本")
     system_version = models.CharField(max_length=32, blank=True, null=True, verbose_name=u"版本号")
-    create_time = models.DateTimeField(auto_now_add=True)
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name=u'创建时间')
     guarantee_date = models.DateField(blank=True, null=True, verbose_name=u'保修时间')
     cabinet = models.CharField(max_length=32, blank=True, null=True, verbose_name=u'机柜号')
     server_cabinet_id = models.IntegerField(blank=True, null=True, verbose_name=u'机器位置')
-    sn_number = models.CharField(max_length=32, blank=True, null=True, verbose_name=u'资产编号')
+    assetas_num = models.CharField(max_length=32, blank=True, null=True, verbose_name=u'资产编号')
+    sn_number = models.CharField(max_length=32, blank=True, null=True, verbose_name=u'硬件编号')
     editor = models.TextField(blank=True, null=True, verbose_name=u'备注')
     status = models.BooleanField(default=True)
 
@@ -68,14 +69,15 @@ class host(models.Model):
 
 
 class Issues(models.Model):
-    locate = models.CharField(max_length=64)
-    hostname = models.CharField(max_length=64)
+    locate = models.CharField(max_length=64, verbose_name=u"所属节点")
+    hostname = models.CharField(max_length=64, verbose_name=u"主机名")
     problemtime = models.DateTimeField(blank=True, null=True, verbose_name=u"故障时间")
-    desciptions = models.CharField(max_length=256)
-    level = models.IntegerField(max_length=4, blank=True, null=True)
+    desciptions = models.CharField(max_length=256,verbose_name="故障描述")
+    level = models.IntegerField(max_length=4, blank=True, null=True, verbose_name=u"警告等级")
     # resolve 0: problem 1: resolve 2:unknow
-    resolve = models.IntegerField(max_length=4, blank=True, null=True)
+    resolve = models.IntegerField(max_length=4, blank=True, null=True, verbose_name=u"是否解决")
     resolvetime = models.DateTimeField(blank=True, null=True, verbose_name=u"解决时间")
+    editor = models.TextField(blank=True, null=True, verbose_name=u'备注')
 
     def __unicode__(self):
         return self.locate

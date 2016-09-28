@@ -10,6 +10,7 @@ from models import Issues
 from models import zbx_srv
 from models import hosts
 from models import ora_db
+from forms  import issuesForm
 import datetime
 import time
 import json
@@ -266,4 +267,27 @@ def srv_hosts(srv_id):
             conn_fail_num = conn_fail_num + 1
     return hosts_num, dis_hosts_num, conn_fail_num
 
+
+def iss_update(request):
+    if request.method == 'POST':
+        form = issuesForm(request.POST)
+        if form.is_valid():
+            problemtime = form.cleaned_data['problemtime']
+            desciptions = form.cleaned_data['desciptions']
+            hostname = form.cleaned_data['hostname']
+            editor = form.cleaned_data['editor']
+            db = Issues.objects.get(problemtime=problemtime,desciptions=desciptions,hostname=hostname)
+            db.editor = editor
+            db.save()
+            return HttpResponseRedirect('/aler/')
+    else:
+        form = issuesForm()
+    try:
+        id = request.GET['id']
+        issues = Issues.objects.get(id=int(id))
+        form = issuesForm(instance=issues)
+        return render(request, 'gentelella/production/zabbix_issues_modal.html', locals())
+    except Exception,e:
+        print e
+        return render(request, 'gentelella/production/zabbix_issues_modal.html', locals())
 

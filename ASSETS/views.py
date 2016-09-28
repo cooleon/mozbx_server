@@ -6,13 +6,13 @@ from SALT.core.salt_token_id import token_id
 from SALT.core.salt_https_api import salt_api_token
 from django.shortcuts import render, render_to_response, HttpResponseRedirect, HttpResponse
 from ASSETS.forms import hostForm
-import chardet
+#import chardet
 
 # Create your views here.
 
 def salt_update_host(request):
     #context = {}
-    node_all = node.objects.all()
+    #node_all = node.objects.all()
     update_node = request.GET['node_name'].encode('utf8')
     update_host = request.GET['host_name']
     node_slt = node.objects.get(name=update_node)
@@ -40,7 +40,7 @@ def salt_update_host(request):
                 data.cpucores = i[key]["num_cpus"]
                 #data.uptime = i[key]["num_cpus"]
                 data.ip = i[key]["ipv4"][0]
-                #data.internal_ip 
+                #data.internal_ip
                 if "manufacturer" in  i[key]:
                     data.brand = i[key]["manufacturer"] + i[key]["productname"]
                 else :
@@ -110,3 +110,19 @@ def details(request):
     except Exception,e:
         print e
         return HttpResponseRedirect("/assets/hosts/")
+
+
+def status(request):
+    node_all = node.objects.all()
+    try:
+        hostid = request.GET['host_id']
+        node_slt = node.objects.get(id=nodeid)
+        host_db = host.objects.get(nodename_id=nodeid,hostid=hostid)
+        token_api_id = token_id(node_slt.salt_user, node_slt.salt_passwd, node_slt.salt_url)
+        print token_api_id
+        list = salt_api_token({'client': 'local', 'fun': 'network.netstat', 'tgt': host_db.name, 'timeout': 100}, node_slt.salt_url, {"X-Auth-Token": token_api_id})
+        master_status = list.run()
+        return render(request, "gentelella/production/salt_execute.html",locals())
+    except Exception,e:
+        return render(request, "gentelella/production/salt_execute.html",locals())
+
