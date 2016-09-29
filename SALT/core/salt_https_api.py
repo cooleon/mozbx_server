@@ -26,8 +26,18 @@ class salt_api_token(object):
         return yaml.load(context)
 
     def CmdRun(self):
-        self.data["client"] = "local"
-        req = requests.post(self.url, headers=self.headers, data=self.data, verify=False)
+        data = self.data
+        if data["arg"]:
+            a=data['arg'].split(',') #参数按逗号分隔
+            for i in a:
+                b=i.split('=') #每个参数再按=号分隔
+                if len(b)>1:
+                    data[b[0]]='='.join(b[1:]) #带=号的参数作为字典传入
+                else:
+                    data['arg%s'%(a.index(i)+100)]=i
+        else:
+            del data["arg"]
+        req = requests.post(self.url, headers=self.headers, data=data, verify=False)
         context = req.text
         return yaml.load(context)
 

@@ -16,6 +16,17 @@
 
     <!-- Custom Theme Style -->
     <link href="/static/css/custom.css" rel="stylesheet">
+        <style>
+
+textarea {
+    white-space: pre;
+    font-family: Courier, monospace;
+    background-color: black;
+    color: #ffffff;
+    }
+
+
+       </style>
   </head>
 
        {% include 'gentelella/production/nav.html' %}
@@ -28,7 +39,7 @@
             <div class="row">
 
               <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel" style="height:600px;">
+                <div class="x_panel" style="height:800px;">
                   <div class="x_title">
                     <h2>执行命令</h2>
                     <ul class="nav navbar-right panel_toolbox">
@@ -51,8 +62,12 @@
                   <div class="x_content" style="display: block;">
                       <div class="container">
                           <h2>
+                                      {% if node_slt.name %}
+                                      当前选择节点：<code id="node_id">{{ node_slt.id }}</code> &nbsp;{{ node_slt.name }}&nbsp;
+                                      {% else %}
+                                      &nbsp;请在右侧选择节点&nbsp;
+                                      {% endif %}
                               {#        机房#}
-                              <label for="idc" disabled="disabled"></label>
                               <div class="btn-group pull-right">
                                   <a class="btn btn-info " href="/admin/SALT/module/add/" target="_blank">
                                       <span class="glyphicon glyphicon-plus"></span>&nbsp;模块</a>
@@ -66,7 +81,7 @@
                                       <a href="#" class="btn btn-info dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                           &nbsp;{{ node_slt.name }}&nbsp;<span class="caret"></span></a>
                                       {% else %}
-                                      <a href="#" class="btn btn-info dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                      <a href="#" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                           &nbsp;请选择一个节点&nbsp;<span class="caret"></span></a>
                                       {% endif %}
                                       <ul class="dropdown-menu">
@@ -132,6 +147,7 @@
                                       <label for="fun" class="sr-only">Function</label>
                                       <select class="form-control" id="fun">
                                           <option value="">——Func———</option>
+                                          <option value="test.ping">test.ping</option>
                                       </select>
                                   </div>
                               </div>
@@ -162,13 +178,13 @@
                               </div>
                           </div>
                           {#        结果#}
-                          <div class="row">
+                          <div class="col-sm-12 col-md-12">
                               {#            分类#}
                               <div class="col-sm-3 col-md-3">
                                   {#            在线主机#}
                                   <div class="form-group">
                                       <label for="minions_up">Minions</label>
-                                      <select class="form-control" size="18"  id="minions_up" >
+                                      <select class="form-control" size="24"  id="minions_up" >
                                           {% for u in minions %}
                                           <option value="{{ u.name }}">{{ u.name }}</option>
                                           {% endfor %}
@@ -187,8 +203,9 @@
                               {#            结果#}
                               <div class="col-sm-9 col-md-9">
                                   <div class="form-group">
-                                      <label for="result" > </label>
-                                      <textarea id="result" readonly>[root@salt-master ~]#</textarea>
+                                      <label for="result" >运行窗口 </label>
+                                      <br>
+                                      <textarea id="result" readonly style="height:422px;width:100%">[root@salt-master ~]#</textarea>
                                   </div>
                               </div>
                           </div>
@@ -284,7 +301,7 @@
             });
             //模块+命令级联
             $('#module').change(function () {
-                $('#fun').html("<option value=''>——Func——</option>"); //初始化数据
+                $('#fun').html("<option value='test.ping'>test.ping</option>"); //初始化数据
                 var module_name = $(this).val();                 //获取当前选择对象的value值
                 var client = $('#client').val();                 //获取当前选择对象的value值
                 $.getJSON("/SALT/command",{client:client,module_name:module_name},function(result){
@@ -303,6 +320,7 @@
             });
             //执行按钮
             $('#run').click(function(){
+                var idc = 1;
                 var client = $('#client').val();
                 var tgt_type = $('#tgt_type').val();
                 var tgt = $('#tgt').val();
@@ -312,14 +330,14 @@
                 var w=client.indexOf('wheel');
                 if( !tgt && r<0 && w<0 ){alert("目标不能为空！");}
                 else if(!fun){alert("请选择命令！");}
-                else {cmd_result(client,tgt_type,tgt,fun,arg)}
+                else {cmd_result(idc,client,tgt_type,tgt,fun,arg)}
             });
         });
         //设置一个定时器、一个计数器
         var timer;
         var count=0;
         //执行命令功能
-        function cmd_result(client,tgt_type,tgt,fun,arg) {
+        function cmd_result(idc,client,tgt_type,tgt,fun,arg) {
             var r=client.indexOf('runner');
             var w=client.indexOf('wheel');
             var s=client.indexOf('ssh');
@@ -330,7 +348,7 @@
             else{command = '[root@salt-master ~]# salt "'+tgt+'" '+fun+' '+arg+' expre_type="'+tgt_type+'"';}
             var rv=document.getElementById('result');
             rv.value=command;
-            $.getJSON("/SALT/execute_fun",{client:client,tgt_type:tgt_type,tgt:tgt,fun:fun,arg:arg},function(result){
+            $.getJSON("/salt/result/",{idc:idc,client:client,tgt_type:tgt_type,tgt:tgt,fun:fun,arg:arg},function(result){
                 if( a>=0 ) {//异步命令返回JID
                     rv.value += "\nJID:" + result;
                     //通过JID向后台获取详细结果，每隔1秒执行
@@ -353,7 +371,7 @@
         //获取任务详细信息功能
         function jid_info(jid) {
             var rv=document.getElementById('result');//返回结果的textarea对象
-             $.getJSON("/SALT/jid_info", {jid: jid}, function (result) {
+             $.getJSON("/salt/jid_info/", {jid: jid}, function (result) {
                 for (var k in result) {
                     var v = result[k]['return'];
                     //k是minion，v是其return值，值为字典时只显示一个按钮，其结果使用formatJSON格式化后保存在一个隐藏的DIV中
