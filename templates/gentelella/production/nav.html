@@ -20,7 +20,7 @@
               </div>
               <div class="profile_info">
                 <span>Welcome,</span>
-                <h2>root</h2>
+                <h2>{{ request.user }}</h2>
               </div>
             </div>
             <!-- /menu profile quick info -->
@@ -46,6 +46,7 @@
                   <li><a><i class="fa fa-desktop"></i>自动运维<span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                         <li><a href="/salt/execute">执行命令</a></li>
+                        <li><a href="/salt/command">命令列表</a></li>
                     </ul>
                   </li>
                   <li><a><i class="fa fa-bell"></i> 告警 <span class="fa fa-chevron-down"></span></a>
@@ -134,7 +135,7 @@
               <ul class="nav navbar-nav navbar-right">
                 <li class="">
                   <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <img src="/static/images/img.jpg" alt="">John Doe
+                      <img src="/static/images/img.jpg" alt="">{{ request.user }}
                     <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">

@@ -1,5 +1,5 @@
+#!/usr/bin/env python
 # encoding:utf8
-import django
 from django.utils import timezone
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
@@ -37,10 +37,11 @@ def logout(request):
     auth.logout(request)
     return HttpResponseRedirect('/login/')
 
+@login_required
 def invalid(request):
     return render(request, 'gentelella/production/page_404.html',)
 
-
+@login_required
 def das_json(request):
     days = 30
     unow = datetime.datetime.now()
@@ -65,6 +66,7 @@ def das_json(request):
     return HttpResponse(json.dumps(dump_list), content_type="application/json")
 
 
+@login_required
 def resolve_json(request):
     days = 30
     unow = datetime.datetime.now()
@@ -102,6 +104,7 @@ def resolve_json(request):
     '''
 
 
+@login_required
 def srv_json(request):
     srv_list = get_srv_list("name")
     srv_total = get_srv_list("total")
@@ -120,6 +123,7 @@ def srv_json(request):
     return HttpResponse(json.dumps(dump_list), content_type="application/json")
 
 
+@login_required
 def resolve_srv_json(request):
     srv_list = get_srv_list("name")
     srv_total = get_srv_list("total")
@@ -141,6 +145,7 @@ def status(request):
     pass
 
 
+@login_required
 def aler(request):
     issues = request.GET.get('issues', 'all')
     if str(issues) == "all":
@@ -161,6 +166,7 @@ def aler(request):
                   )
 
 
+@login_required
 def oracle(request):
     issues = request.GET.get('issues', 'all')
     if str(issues) == "all":
@@ -171,13 +177,10 @@ def oracle(request):
     srv_list = []
     for srv in all_srv:
         srv_list.append(srv.name)
-    return render(request, 'gentelella/production/tables_db.html',
-                  {"srv_list": srv_list,
-                   "all_db_issues": all_db_issues,
-                   }
-                  )
+    return render(request, 'gentelella/production/tables_db.html',locals())
 
 
+@login_required
 def get_srv_list(stype):
     get_list = []
     all_srv = zbx_srv.objects.all()
@@ -190,6 +193,7 @@ def get_srv_list(stype):
             get_list.append(i.hosts_total)
         return get_list
 
+@login_required
 def dashboard(request):
     dstr = datetime.datetime.now()
     d_start =  dstr - datetime.timedelta(days=1)
@@ -255,6 +259,7 @@ def dashboard(request):
 '''
 
 
+@login_required
 def srv_hosts(srv_id):
     hosts_res = hosts.objects.filter(zbx_srv_id=srv_id)
     hosts_num = len(hosts_res)
@@ -268,6 +273,7 @@ def srv_hosts(srv_id):
     return hosts_num, dis_hosts_num, conn_fail_num
 
 
+@login_required
 def iss_update(request):
     if request.method == 'POST':
         form = issuesForm(request.POST)

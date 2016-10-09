@@ -41,6 +41,12 @@ class salt_api_token(object):
         context = req.text
         return yaml.load(context)
 
+    def SaltRun(self):
+        data = self.data
+        req = requests.post(self.url, headers=self.headers, data=data, verify=False)
+        context = req.text
+        return yaml.load(context)
+
 
 class salt_api_jobs(object):
     def __init__(self, url, token=None):

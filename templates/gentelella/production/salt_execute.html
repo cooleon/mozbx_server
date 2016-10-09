@@ -147,7 +147,6 @@ textarea {
                                       <label for="fun" class="sr-only">Function</label>
                                       <select class="form-control" id="fun">
                                           <option value="">——Func———</option>
-                                          <option value="test.ping">test.ping</option>
                                       </select>
                                   </div>
                               </div>
@@ -290,7 +289,7 @@ textarea {
             $('#client').change(function () {
                 $('#module').html("<option value=''>——Module——</option>"); //初始化数据
                 var client = $(this).val();                 //获取当前选择对象的value值
-                $.getJSON("./SALT/command",{client:client},function(result){
+                $.getJSON("/salt/command",{client:client},function(result){
                     //返回值 result 在这里是一个列表
                     for (var i = result.length - 1; i >= 0; i--) {
                       // 把 result 的每一项作为选项显示在网页上
@@ -301,10 +300,10 @@ textarea {
             });
             //模块+命令级联
             $('#module').change(function () {
-                $('#fun').html("<option value='test.ping'>test.ping</option>"); //初始化数据
+                $('#fun').html("<option value=''>--Func--</option>"); //初始化数据
                 var module_name = $(this).val();                 //获取当前选择对象的value值
                 var client = $('#client').val();                 //获取当前选择对象的value值
-                $.getJSON("/SALT/command",{client:client,module_name:module_name},function(result){
+                $.getJSON("/salt/command",{client:client,module_name:module_name},function(result){
                     //返回值 result 在这里是一个列表
                     for (var i = result.length - 1; i >= 0; i--) {
                       // 把 result 的每一项作为选项显示在网页上
