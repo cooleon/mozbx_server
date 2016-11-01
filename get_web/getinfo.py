@@ -108,6 +108,8 @@ def war_in_db():
             db.resolve=0
             db.resolvetime=ch_at
             db.save()
+            if "hjdl" in j[0]:
+                hj_mail_send(des)
         print timezone.now(), i.name, "get warnning!"
 
 
@@ -385,6 +387,29 @@ def zbx_con(ip, port, request):
     re_json = json.loads(data)
     return re_json
 
+
+def hj_mail_send(messages):
+    COMMASPACE = ', '
+    mail_list = ["liangqx@aotain.com",
+                 "liujin@aotain.com",
+                 "liaolb@aotain.com",
+                 "linyq@aotain.com",
+                 "lany@aotain.com",
+                 "huangx@aotain.com",
+                 "lit@aotain.com",
+                 "chensf@aotain.com",
+                 "linjm@aotain.com",
+                 "liys@aotain.com"]
+    msg = MIMEText(messages)
+    msg['Subject'] = 'Oracle Warnning!'
+    msg['From'] = "root@bailei-2.localdomain"
+    msg['To'] = COMMASPACE.join(mail_list)
+    s = smtplib.SMTP('localhost')
+    s.sendmail("root@bailei-2.localdomain",
+               mail_list,
+               msg.as_string()
+               )
+    s.quit()
 
 def mail_send(messages):
     COMMASPACE = ', '

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding:utf8
 from django.utils import timezone
+from django.core import  serializers
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -65,6 +66,22 @@ def das_json(request):
         dump_list.append(dump_dic)
     return HttpResponse(json.dumps(dump_list), content_type="application/json")
 
+@login_required
+def aler_json(request):
+    issues = request.GET.get('issues', 'all')
+    aler_days = int(request.GET.get('aler_days', 1))
+    unow = datetime.datetime.now()
+    uzero = datetime.datetime(unow.year, unow.month, unow.day, 0, 0, 0)
+    d_start =  uzero - datetime.timedelta(days=aler_days)
+    if str(issues) == "all":
+        #all_issues = Issues.objects.filter(resolve=0)
+        all_issues_resolve = serializers.serialize("json", Issues.objects.filter(resolve=1).filter(problemtime__gt=d_start))
+        #all_issues_resolve = Issues.objects.filter(locate=str(issues)).filter(resolve=1)
+    else:
+        #all_issues = Issues.objects.filter(locate=str(issues)).filter(resolve=0)
+        #all_issues_resolve = Issues.objects.filter(locate=str(issues)).filter(resolve=1)
+        pass
+    return HttpResponse(all_issues_resolve, content_type="application/json")
 
 @login_required
 def resolve_json(request):
@@ -120,6 +137,7 @@ def srv_json(request):
                                                 level__gte=3).count()
         dump_dic["hosts"] = srv_total[srv_list.index(srv_str)]
         dump_list.append(dump_dic)
+    print dump_dic
     return HttpResponse(json.dumps(dump_list), content_type="application/json")
 
 
@@ -147,10 +165,13 @@ def status(request):
 
 @login_required
 def aler(request):
+    unow = datetime.datetime.now()
+    uzero = datetime.datetime(unow.year, unow.month, unow.day, 0, 0, 0)
+    d_start =  uzero - datetime.timedelta(days=2)
     issues = request.GET.get('issues', 'all')
     if str(issues) == "all":
         all_issues = Issues.objects.filter(resolve=0)
-        all_issues_resolve = Issues.objects.filter(resolve=1)
+        all_issues_resolve = Issues.objects.filter(resolve=1).filter(problemtime__gt=d_start)
     else:
         all_issues = Issues.objects.filter(locate=str(issues)).filter(resolve=0)
         all_issues_resolve = Issues.objects.filter(locate=str(issues)).filter(resolve=1)
@@ -158,12 +179,7 @@ def aler(request):
     srv_list = []
     for srv in all_srv:
         srv_list.append(srv.name)
-    return render(request, 'gentelella/production/tables_dynamic.html',
-                  {"list": all_issues,
-                   "srv_list": srv_list,
-                   "list_resolve": all_issues_resolve,
-                   }
-                  )
+    return render(request, 'gentelella/production/tables_dynamic.html',locals())
 
 
 @login_required
@@ -180,18 +196,16 @@ def oracle(request):
     return render(request, 'gentelella/production/tables_db.html',locals())
 
 
-@login_required
 def get_srv_list(stype):
     get_list = []
     all_srv = zbx_srv.objects.all()
     if stype == "name":
         for i in all_srv:
             get_list.append(i.name)
-        return get_list
     elif stype == "total":
         for i in all_srv:
             get_list.append(i.hosts_total)
-        return get_list
+    return get_list
 
 @login_required
 def dashboard(request):
@@ -216,6 +230,7 @@ def dashboard(request):
                     "war": srv_war,
                     "hosts_total": i.hosts_total,
                     "status": i.status,
+                    "ip": i.ip,
                     "id": i.id
                     }
         srv_info_list.append(srv_info)

@@ -65,7 +65,8 @@ textarea {
                                       {% if node_slt.name %}
                                       当前选择节点：<code id="node_id">{{ node_slt.id }}</code> &nbsp;{{ node_slt.name }}&nbsp;
                                       {% else %}
-                                      &nbsp;请在右侧选择节点&nbsp;
+                                      &nbsp;请在右侧选择节点&nbsp;<code id="node_id">0</code>
+
                                       {% endif %}
                               {#        机房#}
                               <div class="btn-group pull-right">
@@ -319,7 +320,7 @@ textarea {
             });
             //执行按钮
             $('#run').click(function(){
-                var idc = 1;
+                var idc = {{ node_slt.id }};
                 var client = $('#client').val();
                 var tgt_type = $('#tgt_type').val();
                 var tgt = $('#tgt').val();
@@ -337,6 +338,7 @@ textarea {
         var count=0;
         //执行命令功能
         function cmd_result(idc,client,tgt_type,tgt,fun,arg) {
+            var idc = {{ node_slt.id  }};
             var r=client.indexOf('runner');
             var w=client.indexOf('wheel');
             var s=client.indexOf('ssh');
